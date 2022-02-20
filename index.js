@@ -8,7 +8,7 @@ require('dotenv').config()
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.5zsfm.mongodb.net/burjAlArab?retryWrites=true&w=majority`;
 
-const port = 5000
+const port = process.env.PORT || 5000 ;
 
 const app = express()
 
@@ -17,14 +17,11 @@ app.use(bodyParser.json());
 
 var admin = require("firebase-admin");
 
-var serviceAccount = require("./configs/burj-al-arab-9325d-firebase-adminsdk-vbpcq-9c821a2798.json");
+const serviceAccount = JSON.parse(process.env.FIREBASE_CREDS);
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
-
-const pass = 'ArabinHorse';
-
 
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -73,4 +70,10 @@ client.connect(err => {
   })
 });
 
-app.listen(port)
+app.get('/', (req, res) => {
+  res.send('welcome')
+})
+
+app.listen(port, () => {
+  console.log(`listening at ${port}`)
+})
